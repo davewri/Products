@@ -18,4 +18,6 @@ public interface ProductDao {
     //Updating an existing product - return the number of rows affected
     public int update(final Product product);
 
+    public Product create(final Product product);
+
 }
