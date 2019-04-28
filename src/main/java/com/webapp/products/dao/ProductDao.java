@@ -15,5 +15,7 @@ public interface ProductDao {
     // return a list of products in a category
     public List<Product> findByCategory(int id);
 
+    //Updating an existing product - return the number of rows affected
+    public int update(final Product product);
 
 }
