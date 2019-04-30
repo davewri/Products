@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -105,6 +106,7 @@ public class ApplicationController {
         List<Category> categories = categoryData.findAll();
         model.addAttribute("categories", categories);
         // Return the updateProduct view
+
         return "updateProduct";
     }
 
@@ -139,13 +141,19 @@ public class ApplicationController {
     // Handle form submit via HTTP POST
     @RequestMapping(value = "/newProduct", method = RequestMethod.POST)
     // Form data will be supplied as a filled in Product object
-    public String createProduct(Product product) {
+    public String createProduct(Product product, RedirectAttributes redirAttrs) {
 
         // Use the Dao to create the new product
         // To do: check for errors and return to form if any found
         // https://www.journaldev.com/2668/spring-validation-example-mvc-validator
-        productData.create(product);
+        Product newProduct = productData.create(product);
 
+        if (newProduct != null) {
+            redirAttrs.addFlashAttribute("message", "New product added - id: " + newProduct.getProductId());
+        }
+        else {
+            redirAttrs.addFlashAttribute("error", "error: product not added");
+        }
         // Redirect back to the products list
         // To do: Open a page showing the new product in its own page
         return "redirect:/product";

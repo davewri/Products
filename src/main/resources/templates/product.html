@@ -22,7 +22,20 @@
             </div>
             <div class="col-sm-9">
                 <h3>Products</h3>
+                <!-- mb-4 BootStrap class adds a bottom margin -->
                 <!-- https://www.w3schools.com/bootstrap4/bootstrap_buttons.asp -->
+                <!-- If set (value not null) then show the message from flash -->
+                <div th:if="${message} != null" class="alert alert-success alert-dismissible fade show mb-2">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h6 th:text="${message}"></h6>
+                </div>
+
+                <!-- If set (value not null) then show the error from flash -->
+                <div th:if="${error} != null" class="alert alert-danger alert-dismissible fade show mb-2">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h6 th:text="${error}"></h6>
+                </div>
+
                 <p>
                     <!-- Search form -->
                     <form class="form-inline mr-auto">
@@ -39,6 +52,8 @@
                         <th>Description</th>
                         <th>Stock</th>
                         <th>Price</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                     <tr th:each="product : ${products}">
                         <td th:text="${product.ProductId}"></td>
@@ -47,6 +62,7 @@
                         <td th:text="${product.ProductStock}">Stock</td>
                         <td th:text="${'€ ' + #numbers.formatDecimal(product.ProductPrice, 0, 2)}">Price</td>
                         <td><a th:href="@{'/updateProduct/?id=' + ${product.ProductId}}" class="btn-sm btn-danger" role="button">Edit</a></td>
+                        <td><a th:href="@{'/deleteProduct/?id=' + ${product.ProductId}}" onclick="return confirmDelete();" class="btn-sm btn-danger" role="button">Delete</a></td>
                     </tr>
                 </table>
                 <p>
