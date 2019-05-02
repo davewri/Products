@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -19,8 +21,13 @@ public class ProductDaoImpl implements ProductDao {
     private final String SELECT_SQL = "SELECT * FROM dbo.Product";
     private final String SELECT_SQL_BY_ID = "SELECT * FROM dbo.Product WHERE ProductId = ?";
     private final String SELECT_SQL_BY_CAT_ID = "SELECT * FROM dbo.Product WHERE CategoryId = ?";
+
+    private final String SELECT_SQL_BY_SEARCH = "SELECT * FROM dbo.Product WHERE ProductName like :search or ProductDescription like :search";
     private final String INSERT_SQL = "INSERT INTO Product(ProductName,CategoryId,ProductDescription,ProductStock,ProductPrice) values(?,?,?,?,?)";
     private final String UPDATE_SQL = "UPDATE dbo.Product SET ProductName = ?, CategoryId = ?, ProductDescription = ?, ProductStock = ?, ProductPrice = ? WHERE ProductId = ?";
+    private final String DELETE_SQL_BY_ID = "DELETE FROM dbo.Product WHERE ProductId = ?";
+
+
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -87,6 +94,31 @@ public class ProductDaoImpl implements ProductDao {
 
         // Return the newly created product
         return product;
+    }
+
+    // Delete a product by id
+    public int delete(int id) {
+
+        // Use the delete sql, setting the id paramater
+        // This method returns the number of rows affected
+        return jdbcTemplate.update(DELETE_SQL_BY_ID, new Object[] {id});
+    }
+
+    // return a list of products matching search term
+    public List<Product> findBySearchText(String searchText)  {
+
+        // The named parameter template assigns values to the named parameters (as opposed to ?) in an SQL statement
+        NamedParameterJdbcTemplate namedParamJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+
+        // Set the :search parameter
+        // % is a wildcard - the search term will be used to match files using the like operator
+        // https://www.w3schools.com/SQL/sql_like.asp
+        parameters.addValue("search", "%" + searchText + "%");
+
+        // execute the query with named parameters
+        // use ProductMapper() to process the resultset and return the resulting product list
+        return namedParamJdbcTemplate.query(SELECT_SQL_BY_SEARCH, parameters, new ProductMapper());
     }
 }
 

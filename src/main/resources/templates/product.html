@@ -22,6 +22,19 @@
             </div>
             <div class="col-sm-9">
                 <h3>Products</h3>
+
+                <!-- Search box-->
+                <!-- mb-4 BootStrap class adds a bottom margin -->
+                <div class="mb-4"> <!-- https://getbootstrap.com/docs/4.0/utilities/spacing/ -->
+                    <!-- https://getbootstrap.com/docs/4.0/components/forms/ -->
+                    <form th:action="@{/searchProducts}" method="get" class="form-inline needs-validation">
+                        <div class="form-group">
+                            <input id="search" name="search" type="text" class="form-control" placeholder="search products"  required>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><span class="oi oi-magnifying-glass"></span></button>
+                    </form>
+                </div>
+
                 <!-- mb-4 BootStrap class adds a bottom margin -->
                 <!-- https://www.w3schools.com/bootstrap4/bootstrap_buttons.asp -->
                 <!-- If set (value not null) then show the message from flash -->
@@ -36,13 +49,6 @@
                     <h6 th:text="${error}"></h6>
                 </div>
 
-                <p>
-                    <!-- Search form -->
-                    <form class="form-inline mr-auto">
-                        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-primary" type="submit">Search</button>
-                    </form>
-                </p>
                 <!-- Add table if the products list contains products-->
                 <!-- Bootstrap: https://getbootstrap.com/docs/4.0/content/tables/-->
                 <table class="table table-bordered" th:if="${not #lists.isEmpty(products)}">
@@ -61,8 +67,8 @@
                         <td th:text="${product.ProductDescription}">Description</td>
                         <td th:text="${product.ProductStock}">Stock</td>
                         <td th:text="${'€ ' + #numbers.formatDecimal(product.ProductPrice, 0, 2)}">Price</td>
-                        <td><a th:href="@{'/updateProduct/?id=' + ${product.ProductId}}" class="btn-sm btn-danger" role="button">Edit</a></td>
-                        <td><a th:href="@{'/deleteProduct/?id=' + ${product.ProductId}}" onclick="return confirmDelete();" class="btn-sm btn-danger" role="button">Delete</a></td>
+                        <td><a th:href="@{'/updateProduct/?id=' + ${product.ProductId}}" class="btn-sm btn-danger" role="button"><span class="oi oi-pencil"></span></a></td>
+                        <td><a th:href="@{'/deleteProduct/?id=' + ${product.ProductId}}" onclick="return confirmDelete();" class="btn-sm btn-danger" role="button"><span class="oi oi-trash"></span></a></td>
                     </tr>
                 </table>
                 <p>
@@ -75,6 +81,14 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script>
+        // JavaScript function returns true if user clicks yes, otherwise, false
+        // true - proceed (open link)
+        // false - cancel
+        function confirmDelete() {
+            return confirm('Are you sure?');
+        }
+    </script>
 
     <div th:insert="~{fragments/footer :: footer}">...</div>
 </body>

@@ -20,4 +20,9 @@ public interface ProductDao {
 
     public Product create(final Product product);
 
+    // Delete product with matching id
+    public int delete(int id);
+
+    // return a list of products matching search term
+    public List<Product> findBySearchText(String searchText);
 }

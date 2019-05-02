@@ -158,4 +158,69 @@ public class ApplicationController {
         // To do: Open a page showing the new product in its own page
         return "redirect:/product";
     }
+
+    // Delete Product
+    @RequestMapping(value = "/deleteProduct", method = RequestMethod.GET)
+    public String deleteProduct(@RequestParam(name = "id", required = true) String pId, RedirectAttributes redirAttrs) {
+
+        // Initialise id (default value used to get all products)
+        int id = 0;
+
+        // The parameter may be not be valid - which could crash the application
+        // This trys to parse the string converting it to an it
+        // If successfull id will be assigned the cat value
+        // Otherwise - catch any exception
+        // If it fails (i.e an exception occurs) id value will not be changed (from 0).
+        try {
+            id = Integer.parseInt(pId);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("Bad input for id: " + e);
+        }
+        // If id value is greater than 0 then delete - otherwise error
+        if (id != 0) {
+            int rows = productData.delete(id);
+
+            // Verify that something was deleted (rows affected > 1)
+            if (rows >= 1) {
+                // Set a flash message confirming the delete
+                redirAttrs.addFlashAttribute("message", rows + " rows deleted");
+            }
+            else  {
+                // Nothing deleted - set error flash message
+                redirAttrs.addFlashAttribute("error", "Error: Product delete failed");
+            }
+        }
+        else {
+            // can't delete id = 0 - show error
+            redirAttrs.addFlashAttribute("error", "Nothing to delete");
+        }
+
+        // Return to products page
+        return "redirect:/product";
+    }
+
+    // This method displays the product page
+    @RequestMapping(value = "/searchProducts", method = RequestMethod.GET)
+    // Uses a Model instance - which will be passed to a view
+    // cat parameter is for category id
+    public String searchProducts(@RequestParam(name = "search", required = false, defaultValue = "") String search, Model model) {
+
+        // If search is blank then redirect to the products page
+        if (search == "") {
+            return "redirect:/products";
+        }
+
+        // Do the search and get the results
+        List<Product> products = productData.findBySearchText(search);
+
+        // Get all categories
+        List<Category> categories = categoryData.findAll();
+
+        model.addAttribute("products", products);
+        model.addAttribute("categories", categories);
+
+        // Return the view
+        return "product";
+    }
 }
